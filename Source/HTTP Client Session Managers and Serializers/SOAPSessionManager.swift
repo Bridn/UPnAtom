@@ -24,12 +24,13 @@
 import Foundation
 import AFNetworking
 
-public class SOAPSessionManager: AFHTTPSessionManager {
-    override init(baseURL url: NSURL?, sessionConfiguration configuration: NSURLSessionConfiguration?) {
+open class SOAPSessionManager: AFHTTPSessionManager {
+    override init(baseURL url: URL?, sessionConfiguration configuration: URLSessionConfiguration?) {
         super.init(baseURL: url, sessionConfiguration: configuration)
         
         self.requestSerializer = SOAPRequestSerializer()
         self.responseSerializer = SOAPResponseSerializer()
+        self.completionQueue = DispatchQueue.global()
     }
     
     required public init?(coder aDecoder: NSCoder) {

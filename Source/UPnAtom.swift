@@ -24,11 +24,13 @@
 import Foundation
 
 /// TODO: For now rooting to NSObject to expose to Objective-C, see Github issue #16
-public class UPnAtom: NSObject {
+open class UPnAtom: NSObject {
     // public
+    // delegateQueue is from xaphod github fork
+    public static var delegateQueue = DispatchQueue.main // set before calling sharedInstance, must be serial
     public static let sharedInstance = UPnAtom()
     public let upnpRegistry: UPnPRegistry
-    public var ssdpTypes: Set<String> {
+    open var ssdpTypes: Set<String> {
         get { return ssdpDiscoveryAdapter.rawSSDPTypes }
         set { ssdpDiscoveryAdapter.rawSSDPTypes = newValue }
     }
@@ -39,7 +41,7 @@ public class UPnAtom: NSObject {
     override init() {
         // configure discovery adapter
         let adapterClass = UPnAtom.ssdpDiscoveryAdapterClass()
-        let adapter = adapterClass.init()
+        let adapter = adapterClass.init(queue: UPnAtom.delegateQueue)
         ssdpDiscoveryAdapter = adapter
 
         // configure UPNP registry
@@ -53,19 +55,19 @@ public class UPnAtom: NSObject {
         ssdpDiscoveryAdapter.stop()
     }
     
-    public func ssdpDiscoveryRunning() -> Bool {
+    open func ssdpDiscoveryRunning() -> Bool {
         return ssdpDiscoveryAdapter.running
     }
     
-    public func startSSDPDiscovery() {
+    open func startSSDPDiscovery() {
         ssdpDiscoveryAdapter.start()
     }
     
-    public func stopSSDPDiscovery() {
+    open func stopSSDPDiscovery() {
         ssdpDiscoveryAdapter.stop()
     }
     
-    public func restartSSDPDiscovery() {
+    open func restartSSDPDiscovery() {
         ssdpDiscoveryAdapter.restart()
     }
     

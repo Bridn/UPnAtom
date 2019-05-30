@@ -1,3 +1,9 @@
+## Fork version 
+Updated for Swift 5, Xcode 10.0, >= iOS 12.2
+Used Codable instead of NSCoding in UPnPArchivable
+
+## Initial Version
+
 ![UPnAtom: Modern UPnP in Swift](https://raw.githubusercontent.com/master-nevi/UPnAtom/assets/UPnAtomLogo.png)
 [![Version](http://img.shields.io/cocoapods/v/UPnAtom.svg)](http://cocoapods.org/?q=UPnAtom)
 [![Platform](http://img.shields.io/cocoapods/p/UPnAtom.svg)](https://github.com/master-nevi/UPnAtom/blob/master/UPnAtom.podspec)

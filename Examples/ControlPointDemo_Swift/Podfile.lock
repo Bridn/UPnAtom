@@ -34,6 +34,13 @@ PODS:
 DEPENDENCIES:
   - UPnAtom (from `../..`)
 
+SPEC REPOS:
+  https://github.com/cocoapods/specs.git:
+    - AFNetworking
+    - CocoaAsyncSocket
+    - GCDWebServer
+    - Ono
+
 EXTERNAL SOURCES:
   UPnAtom:
     :path: "../.."
@@ -43,8 +50,8 @@ SPEC CHECKSUMS:
   CocoaAsyncSocket: a18c75dca4b08723628a0bacca6e94803d90be91
   GCDWebServer: 1c39a1f0763e4eb492bee021e4270fce097d3555
   Ono: 80b1c686777d3f6d5d5ce6fcac8a74afef4ca197
-  UPnAtom: 3c96820e2f784fb45116c9cd0e2feebb4f960c87
+  UPnAtom: 076b12a49965d4c18c6fa0650e8868636c141ced
 
 PODFILE CHECKSUM: 0c01f4122f5037d4cf76b9400cce28aeada874ce
 
-COCOAPODS: 1.0.1
+COCOAPODS: 1.6.2

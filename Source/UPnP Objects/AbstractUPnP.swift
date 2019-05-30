@@ -23,62 +23,32 @@
 
 import Foundation
 
+// ** Swift 5 version : All comment marked as TODO in reference of NSObject rooting are from the Swift 2 version - it may no more expose subclasses to Objective-C - **
 /// TODO: For now rooting to NSObject to expose to Objective-C, see Github issue #16
-public class AbstractUPnP: NSObject {
-    public var uuid: String {
+open class AbstractUPnP: ExtendedPrintable {
+    
+    open var uuid: String {
         return usn.uuid
     }
-    public var urn: String {
+    open var urn: String {
         return usn.urn! // checked for nil during init
     }
     public let usn: UniqueServiceName
-    public let descriptionURL: NSURL
-    public var baseURL: NSURL! {
-        return NSURL(string: "/", relativeToURL: descriptionURL)?.absoluteURL
+    public let descriptionURL: URL
+    
+    open var baseURL: URL! {
+        return URL(string: "/", relativeTo: descriptionURL)?.absoluteURL
     }
     
-    required public init?(usn: UniqueServiceName, descriptionURL: NSURL, descriptionXML: NSData) {
-        self.usn = usn
-        self.descriptionURL = descriptionURL
-        super.init()
-        
-        // only deal with UPnP object's with URN's for now, i.e. is either a device or service
-        guard let urn = usn.urn where !urn.isEmpty else {
-            return nil
-        }
+    // Upgraded for Swift 5
+    // ExtendedPrintable protocol implementation
+    public var className: String {
+        get { return "\(type(of: self))" }
     }
-}
 
-public func ==(lhs: AbstractUPnP, rhs: AbstractUPnP) -> Bool {
-    return lhs.usn == rhs.usn
-}
-
-extension AbstractUPnP {
-    override public var hashValue: Int {
-        return usn.hashValue
-    }
-    
-    /// Because self is rooted to NSObject, for now, usage as a key in a dictionary will be treated as a key within an NSDictionary; which requires the overriding the methods hash and isEqual, see Github issue #16
-    override public var hash: Int {
-        return hashValue
-    }
-    
-    /// Because self is rooted to NSObject, for now, usage as a key in a dictionary will be treated as a key within an NSDictionary; which requires the overriding the methods hash and isEqual, see Github issue #16
-    override public func isEqual(object: AnyObject?) -> Bool {
-        if let other = object as? AbstractUPnP {
-            return self == other
-        }
-        return false
-    }
-}
-
-extension AbstractUPnP: ExtendedPrintable {
-    #if os(iOS)
-    public var className: String { return "\(self.dynamicType)" }
-    #elseif os(OSX) // NSObject.className actually exists on OSX! Who knew.
-    override public var className: String { return "\(self.dynamicType)" }
-    #endif
-    override public var description: String {
+    // Upgraded for Swift 5
+    // ExtendedPrintable protocol implementation
+    open var description: String {
         var properties = PropertyPrinter()
         properties.add("uuid", property: uuid)
         properties.add("urn", property: urn)
@@ -86,5 +56,42 @@ extension AbstractUPnP: ExtendedPrintable {
         properties.add("descriptionURL", property: descriptionURL.absoluteString)
         properties.add("baseURL", property: baseURL.absoluteString)
         return properties.description
+    }
+    
+    required public init?(usn: UniqueServiceName, descriptionURL: URL, descriptionXML: Data) {
+        self.usn = usn
+        self.descriptionURL = descriptionURL
+        
+        // only deal with UPnP object's with URN's for now, i.e. is either a device or service
+        guard let urn = usn.urn, !urn.isEmpty else {
+            return nil
+        }
+    }
+
+}
+
+public func ==(lhs: AbstractUPnP, rhs: AbstractUPnP) -> Bool {
+    return lhs.usn == rhs.usn
+}
+
+extension AbstractUPnP: Hashable {
+    
+    // Upgraded for Swift 5
+    open var hashValue: Int {
+        return usn.hashValue
+    }
+    
+    // Commented for Swift 5
+    /// Because self is rooted to NSObject, for now, usage as a key in a dictionary will be treated as a key within an NSDictionary; which requires the overriding the methods hash and isEqual, see Github issue #16
+    //override open var hash: Int {
+    //    return hashValue
+    //}
+    
+    /// Because self is rooted to NSObject, for now, usage as a key in a dictionary will be treated as a key within an NSDictionary; which requires the overriding the methods hash and isEqual, see Github issue #16
+    open func isEqual(_ object: Any?) -> Bool {
+        if let other = object as? AbstractUPnP {
+            return self == other
+        }
+        return false
     }
 }

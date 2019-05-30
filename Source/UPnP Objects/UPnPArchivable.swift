@@ -23,54 +23,56 @@
 
 import Foundation
 
-public class UPnPArchivable: NSObject, NSCoding {
-    public let usn: String
-    public let descriptionURL: NSURL
+// Upgraded for Swift 5 : NSCoding to Swift Codable
+open class UPnPArchivable: Codable {
     
-    init(usn: String, descriptionURL: NSURL) {
+    public let usn: String
+    public let descriptionURL: URL
+    // Upgraded for Swift 5 - Included upnpType and friendlyName for the demo instead of customMetaData: [String : AnyObject] ; it is not compatible with Codable.
+    // TODO for Swift 5 : customeMetaData dictionnary need to be conform with Codable.
+    public let upnpType: String
+    public let friendlyName: String
+
+    // Upgraded for Swift 5
+    enum CodingKeys: String, CodingKey {
+        case usn
+        case descriptionURL
+        case upnpType
+        case friendlyName
+    }
+    
+    // Upgraded for Swift 5
+    init(usn: String, descriptionURL: URL, upnpType: String, friendlyName: String) {
         self.usn = usn
         self.descriptionURL = descriptionURL
+        self.upnpType = upnpType
+        self.friendlyName = friendlyName
     }
     
-    required public init?(coder decoder: NSCoder) {
-        self.usn = decoder.decodeObjectForKey("usn") as! String
-        self.descriptionURL = decoder.decodeObjectForKey("descriptionURL") as! NSURL
+    // Upgraded for Swift 5
+    required public init(from decoder: Decoder) throws {
+        let values = try decoder.container(keyedBy: CodingKeys.self)
+        usn = try values.decode(String.self, forKey: .usn)
+        descriptionURL = try values.decode(URL.self, forKey: .descriptionURL)
+        upnpType = try values.decode(String.self, forKey: .upnpType)
+        friendlyName = try values.decode(String.self, forKey: .friendlyName)
     }
     
-    public func encodeWithCoder(coder: NSCoder) {
-        coder.encodeObject(usn, forKey: "usn")
-        coder.encodeObject(descriptionURL, forKey: "descriptionURL")
+    // Upgraded for Swift 5
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(usn, forKey: .usn)
+        try container.encode(descriptionURL, forKey: .descriptionURL)
+        try container.encode(upnpType, forKey: .upnpType)
+        try container.encode(friendlyName, forKey: .friendlyName)
     }
+
 }
 
+// Upgraded for Swift 5
 extension AbstractUPnP {
-    public func archivable() -> UPnPArchivable {
-        return UPnPArchivable(usn: usn.rawValue, descriptionURL: descriptionURL)
+    public func archivable(upnpType: String, friendlyName: String) -> UPnPArchivable {
+        return UPnPArchivable(usn: usn.rawValue as String, descriptionURL: descriptionURL as URL, upnpType: upnpType as String, friendlyName: friendlyName as String)
     }
 }
 
-public class UPnPArchivableAnnex: UPnPArchivable {
-    /// Use the custom metadata dictionary to re-populate any missing data fields from a custom device or service subclass. While it's not enforced by the compiler, the contents of the meta data must conform to the NSCoding protocol in order to be archivable. Avoided using Swift generics in order to allow compatability with Obj-C.
-    public let customMetadata: [String: AnyObject]
-    
-    init(usn: String, descriptionURL: NSURL, customMetadata: [String: AnyObject]) {
-        self.customMetadata = customMetadata
-        super.init(usn: usn, descriptionURL: descriptionURL)
-    }
-    
-    required public init?(coder decoder: NSCoder) {
-        self.customMetadata = decoder.decodeObjectForKey("customMetadata") as! [String: AnyObject]
-        super.init(coder: decoder)
-    }
-    
-    public override func encodeWithCoder(coder: NSCoder) {
-        super.encodeWithCoder(coder)
-        coder.encodeObject(customMetadata, forKey: "customMetadata")
-    }
-}
-
-extension AbstractUPnP {
-    public func archivable(customMetadata customMetadata: [String: AnyObject]) -> UPnPArchivableAnnex {
-        return UPnPArchivableAnnex(usn: usn.rawValue, descriptionURL: descriptionURL, customMetadata: customMetadata)
-    }
-}

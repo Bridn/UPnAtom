@@ -23,17 +23,31 @@
 
 import Foundation
 
-public class MediaRenderer1Device: AbstractUPnPDevice {
-    public var avTransportService: AVTransport1Service? {
+open class MediaRenderer1Device: AbstractUPnPDevice {
+    open var avTransportService: AVTransport1Service? {
         return service(forURN: "urn:schemas-upnp-org:service:AVTransport:1") as? AVTransport1Service
     }
     
-    public var connectionManagerService: ConnectionManager1Service? {
+    open var connectionManagerService: ConnectionManager1Service? {
         return service(forURN: "urn:schemas-upnp-org:service:ConnectionManager:1") as? ConnectionManager1Service
     }
     
-    public var renderingControlService: RenderingControl1Service? {
+    open var renderingControlService: RenderingControl1Service? {
         return service(forURN: "urn:schemas-upnp-org:service:RenderingControl:1") as? RenderingControl1Service
+    }
+    
+    // Upgraded for Swift 5
+    // ExtendedPrintable protocol implementation
+    override public var className: String {
+        get { return "\(type(of: self))" }
+    }
+    
+    // Upgraded for Swift 5
+    // ExtendedPrintable protocol implementation
+    override open var description: String {
+        var properties = PropertyPrinter()
+        properties.add(super.className, property: super.description)
+        return properties.description
     }
 }
 
@@ -41,15 +55,5 @@ public class MediaRenderer1Device: AbstractUPnPDevice {
 extension AbstractUPnP {
     public func isMediaRenderer1Device() -> Bool {
         return self is MediaRenderer1Device
-    }
-}
-
-/// overrides ExtendedPrintable protocol implementation
-extension MediaRenderer1Device {
-    override public var className: String { return "\(self.dynamicType)" }
-    override public var description: String {
-        var properties = PropertyPrinter()
-        properties.add(super.className, property: super.description)
-        return properties.description
     }
 }
